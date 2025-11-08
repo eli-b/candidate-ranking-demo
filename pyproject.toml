@@ -1,0 +1,46 @@
+[project]
+name = "candidate-ranking-demo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "superlinked>=37.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.7.0",
+    "mypy>=1.18.2",
+    "pytest>=9.0.0",
+    "ruff>=0.14.4",
+]
+
+[tool.ruff]
+line-length = 120
+lint.ignore = []
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "nvidia"  # Supposedly faster for NVIDIA packages
+url = "https://pypi.nvidia.com"
+explicit = true
+
+[tool.uv.sources]
+nvidia-cublas-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cuda-cupti-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cuda-nvrtc-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cuda-runtime-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cudnn-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cufft-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cufile-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-curand-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cusolver-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cusparse-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-cusparselt-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-nccl-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-nvjitlink-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-nvshmem-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
+nvidia-nvtx-cu12 = { index = "nvidia", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" }
