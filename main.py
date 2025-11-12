@@ -66,6 +66,8 @@ def main():
 
     # Skill and position data
     now = datetime(2025, 11, 12)
+    now_timestamp = int(now.timestamp())
+    CONTEXT_DATA = {sl.CONTEXT_COMMON: {sl.CONTEXT_COMMON_NOW: now_timestamp}}
     skill_dicts = [
         dict(id="skill1", name="Team player"),
         dict(id="skill2", name="Frontend technologies"),
@@ -84,7 +86,7 @@ def main():
             0.3,  # Culture fit
             0.00001,  # Leadership
         ],
-        created_at=int(now.timestamp()),
+        created_at=int((now - timedelta(days=14)).timestamp()),
     )
     skill_id_to_weight: dict[str, float] = dict(zip([skill_dict["id"] for skill_dict in skill_dicts], frontend_position_dict["skill_weights"]))
 
@@ -92,7 +94,7 @@ def main():
     description_space = sl.TextSimilaritySpace(text=candidate.self_description, model="sentence-transformers/all-mpnet-base-v2")
     desired_pay_space = sl.NumberSpace(number=candidate.desired_pay, mode=sl.Mode.MINIMUM, min_value=frontend_position_dict["allocated_pay"], max_value=300_000)
     availability_space = sl.NumberSpace(number=candidate.date_of_availability, mode=sl.Mode.MINIMUM,
-                                        min_value=int(now.timestamp()), max_value=frontend_position_dict["required_date_of_filling"])
+                                        min_value=now_timestamp, max_value=frontend_position_dict["required_date_of_filling"])
     skills_score_space = sl.NumberSpace(number=[candidate.skills_score, skill_score.score], mode=sl.Mode.MAXIMUM, min_value=0.0, max_value=10.0)
     evaluation_effects = [
         sl.Effect(
@@ -103,6 +105,7 @@ def main():
         )
         for skill_id, weight in skill_id_to_weight.items()
     ]
+
     candidate_index = sl.Index(
         spaces=[
             description_space,
@@ -115,7 +118,11 @@ def main():
         temperature=0.5,  # Equal weighting of events
     )
 
-    executor = sl.InMemoryExecutor(sources=[skill_source, position_source, candidate_source, skill_score_source, evaluation_source], indices=[candidate_index])
+    executor = sl.InMemoryExecutor(
+        sources=[skill_source, position_source, candidate_source, skill_score_source, evaluation_source],
+        indices=[candidate_index],
+        context_data=CONTEXT_DATA
+    )
     app = executor.run()
 
     skill_source.put(skill_dicts)
@@ -134,7 +141,7 @@ def main():
             self_description="Experienced frontend developer with a passion for creating user-friendly web applications.",
             date_of_availability=int((now + timedelta(days=15)).timestamp()),
             skills_score=0,  # Base score before skill evaluations
-            created_at=int((now + timedelta(days=1)).timestamp()),
+            created_at=int((now - timedelta(days=7)).timestamp()),
         ),
         dict(
             id="candidate2",
@@ -143,9 +150,9 @@ def main():
             phone_number="555-5678",
             desired_pay=125000,
             self_description="Seasoned developer with expertise in React and a strong focus on team collaboration.",
-            date_of_availability=int((now + timedelta(days=40)).timestamp()),
+            date_of_availability=int((now + timedelta(days=20)).timestamp()),
             skills_score=0,  # Base score before skill evaluations
-            created_at=int((now + timedelta(days=2)).timestamp()),
+            created_at=int((now - timedelta(days=10)).timestamp()),
         ),
     ])
     
@@ -165,7 +172,7 @@ def main():
             skill_id="skill1",  # Team player
             skill_score="skillscore1",
             interviewer_name="Carol",
-            created_at=int((now + timedelta(days=2, hours=2, minutes=0)).timestamp()),
+            created_at=int((now - timedelta(days=2, hours=2, minutes=10)).timestamp()),
         ),
         dict(
             id="eval2",
@@ -173,7 +180,7 @@ def main():
             skill_id="skill2",  # Frontend technologies
             skill_score="skillscore2",
             interviewer_name="Carol",
-            created_at=int((now + timedelta(days=2, hours=2, minutes=5)).timestamp()),
+            created_at=int((now - timedelta(days=2, hours=2, minutes=5)).timestamp()),
         ),
         dict(
             id="eval3",
@@ -181,31 +188,31 @@ def main():
             skill_id="skill3",  # Culture fit
             skill_score="skillscore3",
             interviewer_name="Carol",
-            created_at=int((now + timedelta(days=2, hours=2, minutes=10)).timestamp()),
+            created_at=int((now - timedelta(days=2, hours=2, minutes=0)).timestamp()),
         ),
         dict(
-            id="eval1",
+            id="eval4",
             candidate="candidate2",
             skill_id="skill1",  # Team player
             skill_score="skillscore4",
             interviewer_name="Dave",
-            created_at=int((now + timedelta(days=6, hours=2, minutes=0)).timestamp()),
+            created_at=int((now - timedelta(days=6, hours=2, minutes=10)).timestamp()),
         ),
         dict(
-            id="eval2",
+            id="eval5",
             candidate="candidate2",
             skill_id="skill2",  # Frontend technologies
             skill_score="skillscore5",
             interviewer_name="Dave",
-            created_at=int((now + timedelta(days=6, hours=2, minutes=5)).timestamp()),
+            created_at=int((now - timedelta(days=6, hours=2, minutes=5)).timestamp()),
         ),
         dict(
-            id="eval3",
+            id="eval6",
             candidate="candidate2",
             skill_id="skill3",  # Culture fit
             skill_score="skillscore6",
             interviewer_name="Dave",
-            created_at=int((now + timedelta(days=6, hours=2, minutes=10)).timestamp()),
+            created_at=int((now - timedelta(days=6, hours=2, minutes=0)).timestamp()),
         ),
     ])
 
